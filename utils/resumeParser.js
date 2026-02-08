@@ -8,7 +8,7 @@ export const fileHandler = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("/api/parsefile", {
+    const res = await fetch("/api/resume", {
       method: "POST",
       body: formData,
     });
