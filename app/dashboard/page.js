@@ -1,18 +1,17 @@
 import React from 'react'
-import Navbar from '../../components/Navbar'
+
 import { useContext } from 'react'
-import { AuthContext } from '../../context/AuthContext'
+//import { AuthContext } from '../../context/AuthContext'
+import Navbar_imp from './Navbar/page';
+import HeroSection from './hero section/page';
 
 export default function DashboardPage() {
-  const { user } = useContext(AuthContext)
+  //const { user } = useContext(AuthContext)
 
   return (
     <div>
-      <Navbar />
-      <main style={{ padding: 16 }}>
-        <h1>Dashboard</h1>
-        <p>Welcome {user ? user.email : 'guest'}.</p>
-      </main>
+      <Navbar_imp/>
+      <HeroSection/>
     </div>
   )
 }
