@@ -18,7 +18,7 @@ export default function ResumeUpload({ onUpload }) {
 
   return (
     <div>
-      <label>Upload resume (txt/pdf->paste) </label>
+      <label>Upload resume (txt/pdf-paste) </label>
       <div>
         <input type="file" accept="text/*,.txt,.md" onChange={handleFile} />
       </div>

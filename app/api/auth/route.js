@@ -1,18 +1,49 @@
-import { NextResponse } from 'next/server'
 
+// export const runtime = "nodejs";
+// import { NextResponse } from "next/server";
+// import { verifyUser } from "@/utils/verifyUser";
+
+// export async function GET(request) {
+//   try {
+//     const user = await verifyUser(request);
+
+//     return NextResponse.json({ user });
+//   } catch {
+//     return NextResponse.json(
+//       { message: "Unauthorized" },
+//       { status: 401 }
+//     );
+//   }
+// }
+
+// ✅ FIXED - Add POST method:
+export const runtime = "nodejs";
+import { NextResponse } from "next/server";
+import { resumeParser } from "@/utils/resumeParser";
+
+export async function GET(request) {
+  try {
+    const user = await resumeParser(request);
+    return NextResponse.json({ user });
+  } catch (error) {
+    console.error("GET /api/auth error:", error.message);
+    return NextResponse.json(
+      { message: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+}
+
+// ✅ ADD THIS:
 export async function POST(request) {
   try {
-    const body = await request.json()
-    const { email, password, name } = body || {}
-
-    if (!email || !password) {
-      return NextResponse.json({ error: 'Missing credentials' }, { status: 400 })
-    }
-
-    const user = { id: Date.now(), email, name: name || email.split('@')[0] }
-
-    return NextResponse.json({ ok: true, user, token: 'fake-token' })
-  } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 })
+    const user = await resumeParser(request);
+    return NextResponse.json({ user });
+  } catch (error) {
+    console.error("POST /api/auth error:", error.message);
+    return NextResponse.json(
+      { message: "Unauthorized" },
+      { status: 401 }
+    );
   }
 }

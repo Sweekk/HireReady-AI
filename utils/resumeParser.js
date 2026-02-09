@@ -1,9 +1,44 @@
-export function parseResume(text) {
-  const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
-  const nameMatch = text.split('\n')[0]
-  return {
-    name: nameMatch ? nameMatch.trim() : null,
-    email: emailMatch ? emailMatch[0] : null,
-    raw: text
+
+// import { adminAuth } from "@/lib/firebase";
+
+// export async function verifyUser(request) {
+//   console.log("Auth header:", request.headers.get("authorization"));
+//   const authHeader = request.headers.get("authorization");
+
+//   if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//     throw new Error("Unauthorized");
+//   }
+
+//   const token = authHeader.split(" ")[1];
+//   return await adminAuth.verifyIdToken(token);
+// }
+
+
+import { adminAuth } from "@/lib/firebase";
+
+export async function resumeParser(request) {
+  try {
+    const authHeader = request.headers.get("authorization");
+
+    console.log("DEBUG → Authorization header:", authHeader);
+
+    if (!authHeader) {
+      throw new Error("No Authorization header");
+    }
+
+    if (!authHeader.startsWith("Bearer ")) {
+      throw new Error("Invalid Authorization format");
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    console.log("DEBUG → Token received (first 20 chars):", token?.slice(0, 20));
+
+    const decoded = await adminAuth.verifyIdToken(token);
+
+    return decoded;
+  } catch (error) {
+    console.error(" ERROR:", error.message);
+    throw new Error("Unauthorized");
   }
 }
