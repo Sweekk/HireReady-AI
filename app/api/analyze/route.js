@@ -1,53 +1,63 @@
 import { callGemini } from "../../../lib/gemini";
 
+function scanResumeText(rawText) {
+  if (!rawText) return "";
+
+  return rawText
+    .replace(/\s{2,}/g, " ")
+    .replace(/page\s*\d+/gi, "")
+    .replace(/copyright.*$/gi, "")
+    .trim()
+    .slice(0, 6000);
+}
+
 export async function POST(req) {
   try {
-    const { resumeText, jobDescription } = await req.json();
+    const { rawText } = await req.json();
 
-    if (!resumeText || !jobDescription) {
+    if (!rawText || !rawText.trim()) {
       return new Response(
-        JSON.stringify({ error: "Resume text or job description missing" }),
+        JSON.stringify({ error: "No resume content provided" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
+    const scannedText = scanResumeText(rawText);
+
     const prompt = `
 You are an ATS resume analyzer.
 
-Analyze the given resume against the given job description.
+The text below is extracted from a resume PDF.
+It may contain formatting noise, but it represents the candidate's resume.
+
+Analyze it as a resume.
+Do not assume a specific job unless clearly mentioned.
+Base your analysis on general ATS best practices.
 
 Write the output in clean, plain text.
 Do not use markdown.
 Do not use bullet symbols, emojis, or special characters.
 Do not use *, -, •, or numbered lists.
-Do not include explanations outside the sections.
 
-Structure the response using simple section titles followed by normal sentences.
-Leave a blank line between sections.
-
-Use the following structure exactly:
+Structure the response exactly as follows:
 
 ATS Score:
-Give a score out of 100 and explain briefly why.
+Give a score out of 100 and explain briefly.
 
-Skill Match Analysis:
-Explain which skills from the job description are present in the resume and which are missing.
+Skill Coverage:
+Explain which skills are clearly present and which are missing or weak.
 
-Resume Strengths:
-Describe the strong parts of the resume in 2–3 sentences.
+Experience Quality:
+Assess clarity, impact, and relevance of experience.
 
 Resume Gaps:
-Explain what is weak or missing in the resume in 2–3 sentences.
+Explain what is weak, unclear, or missing.
 
 Improvement Suggestions:
-Explain how the resume can be improved to better match the job description.
-Do not invent skills or experience.
+Give concrete suggestions without inventing skills.
 
-Resume:
-${resumeText}
-
-Job Description:
-${jobDescription}
+Resume Text:
+${scannedText}
 `;
 
     const aiResponse = await callGemini(prompt);
