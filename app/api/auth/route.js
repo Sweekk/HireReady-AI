@@ -16,7 +16,6 @@
 //   }
 // }
 
-// ✅ FIXED - Add POST method:
 export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { resumeParser } from "@/utils/verifyUser";
@@ -34,7 +33,7 @@ export async function GET(request) {
   }
 }
 
-// ✅ ADD THIS:
+
 export async function POST(request) {
   try {
     const user = await resumeParser(request);

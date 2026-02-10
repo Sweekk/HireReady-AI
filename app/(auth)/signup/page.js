@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // "use client";
 // import { createAccount } from "../authlogic";
 // import { useState } from "react";
@@ -68,6 +69,10 @@
 // }
 "use client";
 
+=======
+"use client";
+
+>>>>>>> 962f8a33040d0d0a1bf43689f4a9822b336280c1
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createAccount, googlelogin } from "../authlogic";

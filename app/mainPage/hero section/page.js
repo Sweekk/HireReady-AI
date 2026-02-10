@@ -1,4 +1,20 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 export default function HeroSection() {
+  const router = useRouter();
+
+  const navigateProtected = (path) => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/login");
+    } else {
+      router.push(path);
+    }
+  };
+
   return (
     <section className="bg-amber-50">
       <div className="flex flex-col md:flex-row items-center gap-10 px-6 py-16 md:px-12 md:py-24 max-w-7xl mx-auto">
@@ -20,12 +36,25 @@ export default function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg font-semibold w-full sm:w-auto">
+            <button
+              onClick={() => navigateProtected("/resume")}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg font-semibold w-full sm:w-auto"
+            >
               Build Resume with AI
             </button>
 
-            <button className="border-2 border-gray-800 text-gray-800 px-8 py-4 rounded-lg font-semibold w-full sm:w-auto">
+            <button
+              onClick={() => navigateProtected("/ats-checker")}
+              className="border-2 border-gray-800 text-gray-800 px-8 py-4 rounded-lg font-semibold w-full sm:w-auto"
+            >
               Check ATS Score
+            </button>
+
+            <button
+              onClick={() => navigateProtected("/interview")}
+              className="border-2 border-gray-800 text-gray-800 px-8 py-4 rounded-lg font-semibold w-full sm:w-auto"
+            >
+              Try Mock Interview
             </button>
           </div>
 
