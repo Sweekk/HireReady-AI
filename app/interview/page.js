@@ -1,20 +1,32 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
+import { useInterviewStore } from "./../store/useInterviewStore";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
 
 export default function InterviewTestPage() {
-  const [resumeText, setResumeText] = useState("");
-  const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState({});
-  const [evaluations, setEvaluations] = useState({});
-  const [interviewStarted, setInterviewStarted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
   const fileInputRef = useRef(null);
+
+  const {
+    resumeText,
+    questions,
+    answers,
+    evaluations,
+    interviewStarted,
+    loading,
+    error,
+
+    setResumeText,
+    setQuestions,
+    setAnswer,
+    setEvaluation,
+    setInterviewStarted,
+    setLoading,
+    setError,
+    resetInterview,
+  } = useInterviewStore();
 
   /* ---------------- PDF UPLOAD ---------------- */
   async function handlePDFUpload(file) {
@@ -26,14 +38,14 @@ export default function InterviewTestPage() {
 
       const pdf = await pdfjsLib.getDocument({
         data: arrayBuffer,
-        disableWorker: true
+        disableWorker: true,
       }).promise;
 
       let text = "";
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
-        text += content.items.map(item => item.str).join(" ") + "\n";
+        text += content.items.map((item) => item.str).join(" ") + "\n";
       }
 
       setResumeText(text);
@@ -51,16 +63,13 @@ export default function InterviewTestPage() {
 
     setLoading(true);
     setError("");
-    setQuestions([]);
-    setAnswers({});
-    setEvaluations({});
-    setInterviewStarted(false);
+    resetInterview();
 
     try {
       const res = await fetch("/api/interview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rawText: resumeText })
+        body: JSON.stringify({ rawText: resumeText }),
       });
 
       const data = await res.json();
@@ -68,8 +77,8 @@ export default function InterviewTestPage() {
 
       const extractedQuestions = data.questions
         .split("\n")
-        .map(q => q.trim())
-        .filter(q => q.endsWith("?"));
+        .map((q) => q.trim())
+        .filter((q) => q.endsWith("?"));
 
       setQuestions(extractedQuestions);
     } catch (err) {
@@ -79,121 +88,130 @@ export default function InterviewTestPage() {
     }
   }
 
-  /* ---------------- EVALUATE ANSWER ---------------- */
+  /* EVALUATE ANSWER  */
   async function evaluateAnswer(index) {
     const question = questions[index];
     const answer = answers[index];
 
-    if (!answer || !answer.trim()) return;
+    if (!answer?.trim()) return;
 
     const res = await fetch("/api/interview/evaluate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, answer })
+      body: JSON.stringify({ question, answer }),
     });
 
     const data = await res.json();
-
-    setEvaluations(prev => ({
-      ...prev,
-      [index]: data.evaluation
-    }));
+    setEvaluation(index, data.evaluation);
   }
 
-  /* ---------------- UI ---------------- */
+  
   return (
-    <div style={{ padding: 24, maxWidth: 900 }}>
-      <h1 style={{ fontSize: 24, marginBottom: 12 }}>
-        Mock Interview Test
-      </h1>
+    <div className="min-h-screen bg-[#0f0f0f] text-white px-6 py-10">
+      <div className="max-w-4xl mx-auto space-y-8">
 
-      {/* Resume Input */}
-      <textarea
-        rows={6}
-        placeholder="Paste resume text here or upload a PDF"
-        value={resumeText}
-        onChange={(e) => setResumeText(e.target.value)}
-        className="bg-gray-700 w-full"
-      />
+        {/* HEADER */}
+        <header className="space-y-2">
+          <h1 className="text-3xl font-semibold">Mock Interview</h1>
+          <p className="text-gray-400 text-sm">
+            Upload your resume and practice interview questions tailored to you.
+          </p>
+        </header>
 
-      <div style={{ marginTop: 10 }}>
-        <button onClick={() => fileInputRef.current.click()}>
-          Upload Resume PDF
-        </button>
-
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".pdf"
-          style={{ display: "none" }}
-          onChange={(e) => handlePDFUpload(e.target.files[0])}
-        />
-      </div>
-
-      {/* Generate Questions */}
-      <div style={{ marginTop: 16 }}>
-        <button onClick={generateQuestions} disabled={loading}>
-          {loading ? "Generating..." : "Generate Interview Questions"}
-        </button>
-      </div>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {/* Start Interview Button */}
-      {questions.length > 0 && !interviewStarted && (
-        <div style={{ marginTop: 20 }}>
-          <p>{questions.length} questions ready.</p>
-          <button onClick={() => setInterviewStarted(true)}>
-            Start Interview
-          </button>
-        </div>
-      )}
-
-      {/* Interview Q&A */}
-      {interviewStarted && questions.map((q, i) => (
-        <div
-          key={i}
-          style={{
-            marginTop: 24,
-            padding: 12,
-            background: "#111",
-            borderRadius: 6
-          }}
-        >
-          <strong>Q{i + 1}: {q}</strong>
-
+        {/* RESUME INPUT */}
+        <div className="bg-[#1a1a1a] border border-neutral-800 rounded-2xl p-6 space-y-4">
           <textarea
-            rows={4}
-            placeholder="Your answer"
-            className="bg-gray-800 w-full"
-            value={answers[i] || ""}
-            onChange={(e) =>
-              setAnswers({ ...answers, [i]: e.target.value })
-            }
-            style={{ marginTop: 8 }}
+            rows={6}
+            placeholder="Paste resume text here or upload a PDF"
+            value={resumeText}
+            onChange={(e) => setResumeText(e.target.value)}
+            className="w-full bg-[#111] rounded-xl p-4 text-sm outline-none resize-none border border-neutral-700"
           />
 
-          <button
-            onClick={() => evaluateAnswer(i)}
-            style={{ marginTop: 8 }}
-          >
-            Evaluate Answer
-          </button>
-
-          {evaluations[i] && (
-            <pre
-              style={{
-                marginTop: 10,
-                background: "#000",
-                padding: 10,
-                whiteSpace: "pre-wrap"
-              }}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => fileInputRef.current.click()}
+              className="px-4 py-2 rounded-lg bg-neutral-700 hover:bg-neutral-600 transition text-sm"
             >
-              {evaluations[i]}
-            </pre>
-          )}
+              Upload Resume PDF
+            </button>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf"
+              hidden
+              onChange={(e) => handlePDFUpload(e.target.files[0])}
+            />
+
+            <button
+              onClick={generateQuestions}
+              disabled={loading}
+              className="px-4 py-2 rounded-lg bg-white text-black hover:bg-gray-200 transition text-sm"
+            >
+              {loading ? "Generating..." : "Generate Questions"}
+            </button>
+          </div>
+
+          {error && <p className="text-red-400 text-sm">{error}</p>}
         </div>
-      ))}
+
+        {/* START INTERVIEW */}
+        {questions.length > 0 && !interviewStarted && (
+          <div className="bg-[#141414] border border-neutral-800 rounded-2xl p-6 flex items-center justify-between">
+            <p className="text-gray-300">
+              {questions.length} questions generated
+            </p>
+            <button
+              onClick={() => setInterviewStarted(true)}
+              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 transition"
+            >
+              Start Interview
+            </button>
+          </div>
+        )}
+
+        {/* INTERVIEW */}
+        {interviewStarted && (
+          <div className="space-y-8">
+            {questions.map((q, i) => (
+              <div
+                key={i}
+                className="bg-[#1b1b1b] border border-neutral-800 rounded-2xl p-6 space-y-4"
+              >
+                <h3 className="font-medium">
+                  Question {i + 1}
+                </h3>
+
+                <p className="text-gray-300">{q}</p>
+
+                <textarea
+                  rows={4}
+                  placeholder="Type your answer here..."
+                  className="w-full bg-[#111] rounded-xl p-4 text-sm outline-none resize-none border border-neutral-700"
+                  value={answers[i] || ""}
+                  onChange={(e) => setAnswer(i, e.target.value)}
+                />
+
+                <button
+                  onClick={() => evaluateAnswer(i)}
+                  className="px-4 py-2 rounded-lg bg-neutral-700 hover:bg-neutral-600 transition text-sm"
+                >
+                  Evaluate Answer
+                </button>
+
+                {evaluations[i] && (
+                  <div className="bg-black rounded-xl p-4 border border-neutral-700">
+                    <p className="text-sm text-gray-300 whitespace-pre-wrap">
+                      {evaluations[i]}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
