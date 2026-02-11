@@ -12,9 +12,9 @@ import {
 import { usePathname } from "next/navigation";
 
 import {useRouter} from "next/navigation";
-import { SidebarItem } from "./sidebar/page";
-import { ResourceCard, ToolCard } from "./ResourceCard/page";
-import { ProgressItem, StatCard } from "./card/page";
+import { SidebarItem } from "./sidebar/SidebarItem";
+import { ResourceCard, ToolCard } from "./ResourceCard/ResourceCard";
+import { ProgressItem, StatCard } from "./card/Card";
 
 export default function Dashboard() {
   const pathname = usePathname();
