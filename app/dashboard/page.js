@@ -102,7 +102,7 @@ export default function Dashboard() {
               </div>
 
               <div className="p-3">
-                <ProgressItem title="Resume Review" />
+                <ProgressItem title="Resume Review" href="/resume"/>
                 <ProgressItem title="Practice Mock Interview" />
                 <ProgressItem title="Get an interview" />
               </div>
@@ -183,6 +183,7 @@ export default function Dashboard() {
             <ToolCard title="Human-crafted ATS-optimized Resume"
             sub="Before sending your application, ensure it's ready to impress both hiring managers and ATS systems with our comprehensive resume analysis tool."
             button="Check ATS Score" img="https://resumeup.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FResumeUp_Hero_Image_1.ec6a0ba8.png&w=640&q=75"/>
+            
             <ToolCard title="Supercharge Opportunities with HireReady AI" img="https://resumeup.ai/_next/image?url=%2Fimages%2Fnew_templates%2Fcatalyst_resume.jpg&w=640&q=75" button="See more" />
           </div>
 

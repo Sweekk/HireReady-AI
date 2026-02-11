@@ -16,7 +16,7 @@ export function SidebarItem({ icon, label, href, pathname }) {
   const active = pathname === href;
 
   return (
-    <Link href={href}>
+   
       <button
         className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition ${
           active
@@ -27,6 +27,6 @@ export function SidebarItem({ icon, label, href, pathname }) {
         {icon}
         {label}
       </button>
-    </Link>
+    
   );
 }
