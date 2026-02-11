@@ -10,9 +10,9 @@ import {
 } from "lucide-react";
 
 import { usePathname } from "next/navigation";
-import { SidebarItem } from "@/components/sidebar-item";
-import { ResourceCard, ToolCard } from "@/components/resource-card";
-import { ProgressItem } from "@/components/card";
+import { SidebarItem } from "/sidebar-item/.";
+import { ResourceCard, ToolCard } from "@/resource-card";
+import { ProgressItem } from "@/card";
 
 export default function Dashboard() {
   const pathname = usePathname();

@@ -11,11 +11,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {SidebarItem} from "./sidebar/page";
-import { ResourceCard } from "./ResourceCard/page";
-import { ToolCard } from "./ResourceCard/page";
-import { ProgressItem} from "./card/page";
-import { StatCard} from "./card/page";
+import {SidebarItem} from "../../components/sidebar/page";
+import { ResourceCard } from "../../components/ResourceCard/page";
+import { ToolCard } from "../../components/ResourceCard/page";
+import { ProgressItem} from "../../components/card/page";
+import { StatCard} from "../../components/card/page";
 export default function Dashboard() {
   const pathname = usePathname();
 
