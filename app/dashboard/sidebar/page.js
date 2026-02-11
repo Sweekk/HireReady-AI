@@ -1,21 +1,14 @@
 "use client";
 
-import {
-  Home,
-  FileText,
-  Briefcase,
-  Users,
-  MessageSquare,
-  Wrench,
-} from "lucide-react";
-
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function Dashboard() {
+export const SidebarItem = ({ href, icon, label }) => {
   const pathname = usePathname();
+  const active = pathname === href;
 
   return (
-   
+    <Link href={href}>
       <button
         className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition ${
           active
@@ -26,6 +19,6 @@ export default function Dashboard() {
         {icon}
         {label}
       </button>
-    
+    </Link>
   );
-}
+};

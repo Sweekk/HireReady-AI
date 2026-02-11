@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Bell,
   Home,
   FileText,
   Briefcase,
@@ -9,13 +8,14 @@ import {
   MessageSquare,
   Wrench,
 } from "lucide-react";
-import Link from "next/link";
+
 import { usePathname } from "next/navigation";
-import {SidebarItem} from "./sidebar/page";
-import { ResourceCard } from "./ResourceCard/page";
-import { ToolCard } from "./ResourceCard/page";
-import { ProgressItem} from "./card/page";
-import { StatCard} from "./card/page";
+
+
+import { SidebarItem } from "./sidebar/page";
+import { ResourceCard, ToolCard } from "./ResourceCard/page";
+import { ProgressItem, StatCard } from "./card/page";
+
 export default function Dashboard() {
   const pathname = usePathname();
 
@@ -35,10 +35,7 @@ export default function Dashboard() {
             Upgrade to Premium
           </button>
 
-          <button className="flex items-center gap-2 text-sm">
-            <div className="w-8 h-8 rounded-full bg-gray-200" />
-           
-          </button>
+          <div className="w-8 h-8 rounded-full bg-gray-200" />
         </div>
       </header>
 
@@ -85,7 +82,7 @@ export default function Dashboard() {
           </nav>
 
           <div className="mt-6 border-t p-4 space-y-3 text-sm text-gray-600">
-            <button className="hover:text-blue-600 ">Chrome Extension</button>
+            <button className="hover:text-blue-600">Chrome Extension</button>
             <button className="hover:text-blue-600">Suggest a Feature</button>
             <button className="hover:text-blue-600">Report a bug</button>
           </div>
@@ -102,9 +99,12 @@ export default function Dashboard() {
               </div>
 
               <div className="p-3">
-                <ProgressItem title="Resume Review" href="/resume"/>
-                <ProgressItem title="Practice Mock Interview" />
-                <ProgressItem title="Get an interview" />
+                <ProgressItem title="Resume Review" href="/resume" />
+                <ProgressItem
+                  title="Practice Mock Interview"
+                  href="/interview"
+                />
+                <ProgressItem title="Get an interview" href="/jobs" />
               </div>
             </div>
 
@@ -127,9 +127,9 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              {/* Replace image with your dashboard illustration */}
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWADLeVcdzDyAKIJ0KHKIyQzjnABcLliIM7hDjNvVXJX0ND5K3"
+                alt="Interview illustration"
                 className="hidden md:block w-60 rounded-lg"
               />
             </div>
@@ -139,38 +139,42 @@ export default function Dashboard() {
           <div className="bg-white border border-gray-300 rounded-xl p-6 flex justify-between items-center">
             <div>
               <h3 className="font-semibold text-gray-800 text-3xl">
-                Youve Taken the First Step — Let’s Go Further
+                You've Taken the First Step — Let’s Go Further
               </h3>
 
               <p className="text-lg text-gray-500 mt-1">
-               Youve already started your journey. Now explore all the AI-powered tools designed to help you land job faster and stress less.
+                You've already started your journey. Now explore all the
+                AI-powered tools designed to help you land jobs faster and
+                stress less.
               </p>
 
-              <button className="mt-3 hover:bg-gray-200 text-lg font-medium border-blue-500 h-12  p-1 justify-center rounded-md">
-                Explore  Features
+              <button className="mt-3 hover:bg-gray-200 text-lg font-medium border border-blue-500 h-12 px-4 rounded-md">
+                Explore Features
               </button>
             </div>
 
             <img
               src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQzvhWvwKa0EPJFVRj18SXtedXGDKJsysoBItyhJSVoibRdJUpK"
+              alt="Motivation"
               className="hidden md:block w-44 rounded-full"
             />
           </div>
-
-        
 
           {/* ===== TOOLS ===== */}
           <div className="grid lg:grid-cols-3 gap-6">
             <div className="bg-white rounded-xl p-6 shadow-sm">
               <p className="text-xl text-gray-500">Plans starting from</p>
               <h3 className="text-3xl font-bold mt-2">$9.99 / Week</h3>
-              <h3 className="mt-8">Supercharge your job search with HireReady AI-powered tools built to get you hired faster.</h3>
+              <p className="mt-8 text-gray-600">
+                Supercharge your job search with HireReady AI-powered tools
+                built to get you hired faster.
+              </p>
 
               <button className="mt-6 w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded-md text-sm font-medium">
                 UPGRADE NOW
               </button>
 
-              <ul className="mt-4 text-lg font-semibold text-gray-500 space-y-2">
+              <ul className="mt-4 text-sm text-gray-500 space-y-2">
                 <li>✓ Unlimited AI Resume Analysis</li>
                 <li>✓ Interview Preparation</li>
                 <li>✓ Job Tracking Tools</li>
@@ -180,11 +184,18 @@ export default function Dashboard() {
               </ul>
             </div>
 
-            <ToolCard title="Human-crafted ATS-optimized Resume"
-            sub="Before sending your application, ensure it's ready to impress both hiring managers and ATS systems with our comprehensive resume analysis tool."
-            button="Check ATS Score" img="https://resumeup.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FResumeUp_Hero_Image_1.ec6a0ba8.png&w=640&q=75"/>
-            
-            <ToolCard title="Supercharge Opportunities with HireReady AI" img="https://resumeup.ai/_next/image?url=%2Fimages%2Fnew_templates%2Fcatalyst_resume.jpg&w=640&q=75" button="See more" />
+            <ToolCard
+              title="Human-crafted ATS-optimized Resume"
+              sub="Ensure it's ready to impress both hiring managers and ATS systems."
+              button="Check ATS Score"
+              img="https://resumeup.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2FResumeUp_Hero_Image_1.ec6a0ba8.png&w=640&q=75"
+            />
+
+            <ToolCard
+              title="Supercharge Opportunities with HireReady AI"
+              button="See more"
+              img="https://resumeup.ai/_next/image?url=%2Fimages%2Fnew_templates%2Fcatalyst_resume.jpg&w=640&q=75"
+            />
           </div>
 
           {/* ===== RESOURCES ===== */}
@@ -196,20 +207,24 @@ export default function Dashboard() {
               </button>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 mb-2.5">
-              <ResourceCard 
-              img="https://cdn.prod.website-files.com/635c591478332fd4db25d46e/65d25df1b0d7cb8d764bd5c3_chatgpt%20for%20behavioral%20interview.avif" 
-              info="How to use ChatGPT for Behavioral interviews Preparation"
-              subinfo="From explaining quantum theory through poetry to rewriting tweets in Elon Musk’s style, from writing scripts for videos to breaking down complex…"
-             />
-              
-              <ResourceCard img="https://resumeup.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fresume-length-best-practices.5508cfd7.jpeg&w=640&q=75"
-              info="How Long Should a Resume Be in 2026? (Best Practices)"
-              subinfo="Discover the ideal length for your resume based on your experience level. Learn how to craft a concise, impactful resume which helpful in shortlisting among different companies"/>
+            <div className="grid md:grid-cols-3 gap-6">
+              <ResourceCard
+                img="https://cdn.prod.website-files.com/635c591478332fd4db25d46e/65d25df1b0d7cb8d764bd5c3_chatgpt%20for%20behavioral%20interview.avif"
+                info="How to use ChatGPT for Behavioral Interviews"
+                subinfo="From explaining quantum theory through poetry to rewriting tweets..."
+              />
 
-              <ResourceCard img="https://resumeup.ai/_next/image?url=%2Fresume-up-hero.png&w=1200&q=75"
-               info="Tech Job Boards: What They Are and Why You Should Be Using Them | HireReady AI"
-               subinfo="These online platforms are specifically designed to connect tech professionals like you with companies actively hiring. They act as a central hub for…"/>
+              <ResourceCard
+                img="https://resumeup.ai/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fresume-length-best-practices.5508cfd7.jpeg&w=640&q=75"
+                info="How Long Should a Resume Be in 2026?"
+                subinfo="Discover the ideal length based on your experience level."
+              />
+
+              <ResourceCard
+                img="https://resumeup.ai/_next/image?url=%2Fresume-up-hero.png&w=1200&q=75"
+                info="Tech Job Boards: Why You Should Use Them"
+                subinfo="Connect with companies actively hiring tech professionals."
+              />
             </div>
           </section>
         </main>
@@ -217,7 +232,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-
-
-
