@@ -1,34 +1,38 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { Plus, SendHorizontal } from "lucide-react";
+import { fileHandler } from "@/utils/fileHandler";
 
 const ChatInput = () => {
   const [message, setMessage] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [resumeText, setResumeText] = useState("");
   const [analysis, setAnalysis] = useState("");
   const [loading, setLoading] = useState(false);
 
   const textareaRef = useRef(null);
   const inputRef = useRef(null);
 
-  const canSend = !!selectedFile || message.trim().length > 0;
+  const canSend = message.trim() || resumeText.trim();
 
   // Detect whether chat has started
-  const hasStarted = !!analysis || loading || message || selectedFile;
+  const hasStarted = analysis || loading || message || resumeText;
 
   /* ---------- Upload ---------- */
   const handleClick = () => inputRef.current.click();
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-    alert("File too large (max 10MB)");
-    return;
-}   
-
-    setSelectedFile(file);
+    setLoading(true);
+    try {
+      const text = await fileHandler(file);
+      setResumeText(text);
+    } catch {
+      setAnalysis("Failed to parse resume.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   /* ---------- Send ---------- */
@@ -38,37 +42,23 @@ const ChatInput = () => {
     setLoading(true);
     setAnalysis("");
 
-// ${resumeText}
+    const rawText = `
+${resumeText}
 
-// User Context:
-// ${message}
-// `;
+User Context:
+${message}
+`;
 
     try {
-      const formData = new FormData();
-
-      if(selectedFile) {
-        formData.append("file", selectedFile);
-      }
-
-      formData.append("context", message);
-
       const res = await fetch("/api/analyze", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rawText }),
       });
-
-      if(!res.ok) {
-        throw new Error("Server error");
-    }
 
       const data = await res.json();
       setAnalysis(data.analysis || "No analysis generated.");
       setMessage("");
-      setSelectedFile(null);
-      if(inputRef.current) {
-        inputRef.current.value = "";
-      }
     } catch {
       setAnalysis("Something went wrong while analyzing.");
     } finally {
@@ -120,10 +110,10 @@ const ChatInput = () => {
           <div className="flex-1 overflow-y-auto px-6 py-10 space-y-6">
 
             {/* USER MESSAGE */}
-            {(message || selectedFile) && (
+            {(message || resumeText) && (
               <div className="flex justify-end">
                 <div className="max-w-xl rounded-2xl bg-blue-600 px-5 py-3 text-sm shadow-md">
-                  {message || (selectedFile ? "Resume uploaded" : "")}
+                  {message || "Resume uploaded"}
                 </div>
               </div>
             )}

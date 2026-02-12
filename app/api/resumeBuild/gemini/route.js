@@ -1,26 +1,17 @@
-import { enhanceResumeWithFile } from "@/lib/geminiService";
-
+import { enhanceResume } from "@/lib/geminiService";
 export async function POST(req) {
   try {
-    const { file, mimeType, fileName, requirements } = await req.json();
+    const { text, requirements } = await req.json();
 
-    if (!file || file.trim().length === 0) {
+    if (!text || text.trim().length === 0) {
       return Response.json(
-        { error: "Resume file is required" },
+        { error: "Resume text is required" },
         { status: 400 }
       );
     }
-
-    if (!mimeType) {
-      return Response.json(
-        { error: "File MIME type is required" },
-        { status: 400 }
-      );
-    }
-
-    console.log("Processing file:", fileName, "with MIME type:", mimeType);
-    
-    const enhancedText = await enhanceResumeWithFile(file, mimeType, fileName, requirements || "");
+    console.log(text);
+    console.log(requirements) || "rishan";
+    const enhancedText = await enhanceResume(text, requirements || "");
 
     return Response.json(
       { enhancedText },

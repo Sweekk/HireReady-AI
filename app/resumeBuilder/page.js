@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { fileHandler } from "@/utils/fileHandler";
 
 
 export default function ResumeBuilder() {
@@ -7,66 +8,63 @@ export default function ResumeBuilder() {
   const [requirements, setRequirements] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
+  const [extractedText, setExtractedText] = useState("");
 
   const handleUpload = async (selectedFile) => {
     if (!selectedFile) return;
 
     setFile(selectedFile);
-    // Just store the file - we'll send it to Gemini directly
+    setLoading(true);
+
+    try {
+      const Text = await fileHandler(selectedFile);
+
+      if (Text) {
+        console.log(Text);
+        setExtractedText(Text);
+      } else {
+        alert("Failed to extract text from file");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error while processing file");
+    } finally {
+      setLoading(false);
+    }
   };
   const handleSubmit = async () => {
-    if (!file) {
-      alert("No file selected");
+    if (!extractedText) {
+      alert("No extracted text available");
       return;
     }
 
     setLoading(true);
 
     try {
-      // Convert file to base64 using FileReader
-      const reader = new FileReader();
-      
-      reader.onload = async () => {
-        try {
-          const fileBase64 = reader.result.split(',')[1]; // Extract base64 from data URL
-          const fileMimeType = file.type;
+      const res = await fetch("/api/resumeBuild/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: extractedText,
+          requirements: requirements,
+        }),
+      });
 
-          const res = await fetch("/api/resumeBuild/gemini", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              file: fileBase64,
-              mimeType: fileMimeType,
-              fileName: file.name,
-              requirements: requirements,
-            }),
-          });
+      const raw = await res.text();
+      console.log("RAW RESPONSE FROM API:", raw);
 
-          const data = await res.json();
+      const data = JSON.parse(raw);
 
-          if (!res.ok) {
-            console.error("API Error:", data);
-            throw new Error(data.error || "Failed to enhance resume");
-          }
+      if (!res.ok) {
+        console.error("API Error:", data);
+        throw new Error(data.error || "Failed to enhance resume");
+      }
 
-          setResult(data.enhancedText);
-        } catch (error) {
-          console.error("Enhancement Error:", error);
-          alert(error.message);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      reader.onerror = () => {
-        alert("Failed to read file");
-        setLoading(false);
-      };
-
-      reader.readAsDataURL(file);
+      setResult(data.enhancedText);
     } catch (error) {
       console.error("Enhancement Error:", error);
       alert(error.message);
+    } finally {
       setLoading(false);
     }
   };
